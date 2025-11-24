@@ -1,2 +1,91 @@
 @startuml
+
+package "core" {
+    class LinterApp {
+        +main(args: String[]): void
+        -createChecks(): java.util.List<LintCheck>
+    }
+
+    class Linter {
+        -checks: java.util.List<LintCheck>
+        -issues: java.util.List<LintIssue>
+        +Linter(checks: java.util.List<LintCheck>)
+        +analyzeClassNode(classNode: org.objectweb.asm.tree.ClassNode): void
+        +getIssues(): java.util.List<LintIssue>
+    }
+
+    interface LintCheck {
+        +getId(): String
+        +getDescription(): String
+        +analyze(classNode: org.objectweb.asm.tree.ClassNode): java.util.List<LintIssue>
+    }
+
+    class LintIssue {
+        -checkId: String
+        -className: String
+        -message: String
+        -severity: Severity
+        +LintIssue(checkId: String, className: String, message: String, severity: Severity)
+        +getCheckId(): String
+        +getClassName(): String
+        +getMessage(): String
+        +getSeverity(): Severity
+    }
+
+    enum Severity {
+        WARNING
+        ERROR
+    }
+
+    class AsmClassReaderUtil {
+        +readClass(path: java.nio.file.Path): org.objectweb.asm.tree.ClassNode
+    }
+}
+
+package "checks" {
+    class EqualsHashCodeCheck {
+        +getId(): String
+        +getDescription(): String
+        +analyze(classNode: org.objectweb.asm.tree.ClassNode): java.util.List<LintIssue>
+    }
+
+    class PublicConstructorCheck {
+        +getId(): String
+        +getDescription(): String
+        +analyze(classNode: org.objectweb.asm.tree.ClassNode): java.util.List<LintIssue>
+    }
+
+    class CollectionsInterfaceCheck {
+        -concreteCollections: java.util.Set<String>
+        +CollectionsInterfaceCheck()
+        +getId(): String
+        +getDescription(): String
+        +analyze(classNode: org.objectweb.asm.tree.ClassNode): java.util.List<LintIssue>
+        -internalToSimple(internalName: String): String
+    }
+}
+
+package "asm" {
+    class org.objectweb.asm.ClassReader {
+    }
+
+    class org.objectweb.asm.tree.ClassNode {
+        +name: String
+        +access: int
+        +fields: java.util.List
+        +methods: java.util.List
+    }
+}
+
+LinterApp --> Linter
+Linter --> LintCheck
+Linter --> LintIssue
+Linter --> org.objectweb.asm.tree.ClassNode
+AsmClassReaderUtil ..> org.objectweb.asm.ClassReader
+AsmClassReaderUtil --> org.objectweb.asm.tree.ClassNode
+
+EqualsHashCodeCheck ..|> LintCheck
+PublicConstructorCheck ..|> LintCheck
+CollectionsInterfaceCheck ..|> LintCheck
+
 @enduml

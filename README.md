@@ -1,7 +1,7 @@
-# Project: NAME
+# Project: Java Linter
 
 ## Contributors
-NAME, NAME, NAME
+Devon Lai
 
 ## Dependencies
 - LANGUAGE AND VERSION
