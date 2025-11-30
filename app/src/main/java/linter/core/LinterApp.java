@@ -10,8 +10,6 @@ import linter.checks.PublicConstructorCheck;
 public class LinterApp {
 
     public static void main(String[] args) throws Exception {
-        System.out.println("test");
-
         if (args.length < 1) {
             System.err.println("Usage: java -jar linter.jar <path-to-classes>");
             System.exit(1);
